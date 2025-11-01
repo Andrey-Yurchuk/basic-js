@@ -20,14 +20,78 @@ const { NotImplementedError } = require('../lib');
  *
  */
 class VigenereCipheringMachine {
-  encrypt() {
-    // Remove line below and write your code here
-    throw new NotImplementedError('Not implemented');
+  constructor(direct = true) {
+    this.direct = direct;
   }
 
-  decrypt() {
-    // Remove line below and write your code here
-    throw new NotImplementedError('Not implemented');
+  encrypt(message, key) {
+    if (!message || !key) {
+      throw new Error('Incorrect arguments!');
+    }
+    
+    message = String(message).toUpperCase();
+    key = String(key).toUpperCase();
+    
+    let result = '';
+    let keyIndex = 0;
+    
+    for (let i = 0; i < message.length; i++) {
+      const char = message[i];
+      
+      if (char >= 'A' && char <= 'Z') {
+        const messageCode = char.charCodeAt(0) - 65;
+        const keyChar = key[keyIndex % key.length];
+        const keyCode = keyChar.charCodeAt(0) - 65;
+        
+        const encryptedCode = (messageCode + keyCode) % 26;
+        result += String.fromCharCode(encryptedCode + 65);
+        
+        keyIndex++;
+      } else {
+        result += char;
+      }
+    }
+    
+    if (!this.direct) {
+      result = result.split('').reverse().join('');
+    }
+    
+    return result;
+  }
+
+  decrypt(encryptedMessage, key) {
+    if (!encryptedMessage || !key) {
+      throw new Error('Incorrect arguments!');
+    }
+    
+    let message = String(encryptedMessage).toUpperCase();
+    key = String(key).toUpperCase();
+    
+    let result = '';
+    let keyIndex = 0;
+    
+    for (let i = 0; i < message.length; i++) {
+      const char = message[i];
+      
+      if (char >= 'A' && char <= 'Z') {
+        const encryptedCode = char.charCodeAt(0) - 65;
+        const keyChar = key[keyIndex % key.length];
+        const keyCode = keyChar.charCodeAt(0) - 65;
+        
+        const decryptedCode = (encryptedCode - keyCode + 26) % 26;
+        result += String.fromCharCode(decryptedCode + 65);
+        
+        keyIndex++;
+      } else {
+        result += char;
+      }
+    }
+    
+    if (!this.direct) {
+      result = result.split('').reverse().join('');
+    }
+    
+    return result;
   }
 }
 
